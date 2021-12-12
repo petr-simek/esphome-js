@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * ColorPicker control
  **/
@@ -142,36 +143,41 @@ function ColorPickerControl(cfg) {
                 );
             },
             hexToHsv: function (hex) {
-                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g,'');
+                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g, '');
                 return utils.rgbToHsv(...hex.match(/.{2}/g).map(v => parseInt(v, 16)));
             },
-            hexToRgb: function ( hex ) {
-                var r,g,b;
-                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g,'');
+            hexToRgb: function (hex) {
+                var r, g, b;
+                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g, '');
                 r = hex.charAt(0) + '' + hex.charAt(1);
                 g = hex.charAt(2) + '' + hex.charAt(3);
                 b = hex.charAt(4) + '' + hex.charAt(5);
-                r = parseInt( r,16 );
-                g = parseInt( g,16 );
-                b = parseInt( b ,16);
+                r = parseInt(r, 16);
+                g = parseInt(g, 16);
+                b = parseInt(b, 16);
                 return [
                     r,
                     g,
                     b
                 ];
             },
-            getBoundingBox: function(el){
+            getBoundingBox: function (el) {
                 let rect = el.getBoundingClientRect();
-                return { top: rect.top + (window.pageYOffset || document.documentElement.scrollTop), left: rect.left + (window.pageXOffset || document.documentElement.scrollLeft), width: rect.width, height: rect.height  };
+                return {
+                    top: rect.top + (window.pageYOffset || document.documentElement.scrollTop),
+                    left: rect.left + (window.pageXOffset || document.documentElement.scrollLeft),
+                    width: rect.width,
+                    height: rect.height
+                };
             },
-            degreesToRadians: function(degrees) {
+            degreesToRadians: function (degrees) {
                 return degrees * (Math.PI / 180);
             },
             countDecimals: function (value) {
-                if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
+                if (Math.floor(value.valueOf()) === value.valueOf()) return 0;
                 return value.toString().split(".")[1].length || 0;
             },
-            round: function(value, places) {
+            round: function (value, places) {
                 let res = Number(Math.round(value + 'e' + places) + 'e-' + places);
                 return !isNaN(res) ? res : 0;
             }
@@ -191,13 +197,13 @@ function ColorPickerControl(cfg) {
     let _color = new HSVaColor().fromRGBa(config.color.r, config.color.g, config.color.b);
     Object.defineProperty(self, 'color', {
         // getter function
-        get: function() {
+        get: function () {
             return _color;
         },
         //setter function
-        set: function(c){
+        set: function (c) {
             // if new color is HSVaColor type
-            if(c instanceof HSVaColor){
+            if (c instanceof HSVaColor) {
                 // set new color value
                 _color = c;
                 // trigger value changed event
@@ -215,7 +221,7 @@ function ColorPickerControl(cfg) {
      * @param {Any} args
      *  Event data
      */
-    let emit = function(event, ...args) {
+    let emit = function (event, ...args) {
         eventListeners[event].forEach(cb => cb(...args, self));
     }
 
@@ -226,7 +232,7 @@ function ColorPickerControl(cfg) {
      * @param {Function} fn
      *  Event function
      */
-    this.on = function(event, fn) {
+    this.on = function (event, fn) {
         eventListeners[event] = eventListeners[event] || [];
         eventListeners[event].push(fn);
         return this;
@@ -239,7 +245,7 @@ function ColorPickerControl(cfg) {
      * @param {Function} fn
      *  Event function
      */
-    this.off = function(event, fn) {
+    this.off = function (event, fn) {
         const functions = (eventListeners[event] || []);
         const index = functions.indexOf(fn);
         if (~index)
@@ -272,7 +278,6 @@ function ColorPickerControl(cfg) {
         
                 </div>
                 <div class="color-picker-controls-group" style="flex: 1; padding-top: 0;">
-
                     <div class="color-picker-input-controls">
                         <div class="color-picker-input-controls-tab-headers">
                             <button data-tab="rgb">RGB</button>
@@ -280,7 +285,6 @@ function ColorPickerControl(cfg) {
                             <button data-tab="hex">HEX</button>
                         </div>
                         <div class="color-picker-input-controls-tabs">
-
                             <div class="color-picker-input-controls-tab" data-tab="rgb">
                                 <div class="color-picker-red-input range-input-control" data-value="0" data-step="0.01" data-min="0" data-max="255">
                                     <div class="range-input-enter-block">
@@ -313,7 +317,6 @@ function ColorPickerControl(cfg) {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="color-picker-input-controls-tab selected" data-tab="hsv">
                                 <div class="color-picker-hue-input range-input-control" data-value="0" data-step="0.01" data-min="0" data-max="360">
                                     <div class="range-input-enter-block">
@@ -346,7 +349,6 @@ function ColorPickerControl(cfg) {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="color-picker-input-controls-tab" data-tab="hex">
                                 <div class="color-picker-hex-input text-input-control" data-value="000000" data-is-alphanumeric="true">
                                     <div class="text-input-enter-block">
@@ -397,7 +399,7 @@ function ColorPickerControl(cfg) {
         // initialize control to manipulate hex value of color
         hex_input = new TextInputControl(self.root.querySelector('.color-picker-hex-input'));
         // initialize control to manipulate alpha channel of color
-        if(config.use_alpha)
+        if (config.use_alpha)
             alpha_input = new RangeInputControl(self.root.querySelector('.color-picker-alpha-input'));
         // binding events to ui
         bindEvents();
@@ -413,13 +415,13 @@ function ColorPickerControl(cfg) {
      **/
     let bindEvents = function () {
         // creating click event handler for tab switching buttons
-        tab_selection_handler = function(e){
+        tab_selection_handler = function (e) {
             // removing 'active' class from all tab switching buttons and tabs
-            tab_selection_buttons.forEach(e=>e.classList.remove('selected'));
-            self.root.querySelectorAll('.color-picker-input-controls-tab').forEach(e=>e.classList.remove('selected'));
+            tab_selection_buttons.forEach(e => e.classList.remove('selected'));
+            self.root.querySelectorAll('.color-picker-input-controls-tab').forEach(e => e.classList.remove('selected'));
             // adding 'active' class to target button and tab
             e.target.classList.add("selected");
-            self.root.querySelector('.color-picker-input-controls-tab[data-tab="' + e.target.dataset.tab  + '"]').classList.add('selected');
+            self.root.querySelector('.color-picker-input-controls-tab[data-tab="' + e.target.dataset.tab + '"]').classList.add('selected');
         };
         // adding click event handler to click event listeners of tab switching buttons
         tab_selection_buttons.forEach(button => {
@@ -427,7 +429,7 @@ function ColorPickerControl(cfg) {
         });
 
         // creating change event handler for color wheel control
-        color_wheel_change_handler = function(values){
+        color_wheel_change_handler = function (values) {
             // setting new hue value
             self.color.h = values.hue;
             // setting new saturation value
@@ -439,7 +441,7 @@ function ColorPickerControl(cfg) {
         color_wheel.on('change', color_wheel_change_handler);
 
         // creating change event handler for brightness control
-        brightness_slider_change_handler = function(value){
+        brightness_slider_change_handler = function (value) {
             // setting new brightness value
             self.color.v = value;
             // updating color picker control
@@ -449,7 +451,7 @@ function ColorPickerControl(cfg) {
         brightness_slider.on('change', brightness_slider_change_handler);
 
         // creating change event handler for hue input control
-        hue_input_change_handler = function(value){
+        hue_input_change_handler = function (value) {
             // setting new hue value
             self.color.h = value;
             // updating color picker control
@@ -458,7 +460,7 @@ function ColorPickerControl(cfg) {
         // adding change event handler to change event listener of hue input control
         hue_input.on('change', hue_input_change_handler);
         // creating change event handler for saturation input control
-        saturation_input_change_handler = function(value){
+        saturation_input_change_handler = function (value) {
             // setting new saturation value
             self.color.s = value;
             // updating color picker control
@@ -467,7 +469,7 @@ function ColorPickerControl(cfg) {
         // adding change event handler to change event listener of saturation input control
         saturation_input.on('change', saturation_input_change_handler);
         // creating change event handler for brightness input control
-        brightness_input_change_handler = function(value){
+        brightness_input_change_handler = function (value) {
             // setting new brightness value
             self.color.v = value;
             // updating color picker control
@@ -477,7 +479,7 @@ function ColorPickerControl(cfg) {
         brightness_input.on('change', brightness_input_change_handler);
 
         // creating change event handler for red input control
-        red_input_change_handler = function(value){
+        red_input_change_handler = function (value) {
             // getting convert rgb color data to hsv
             let hsv = utils.rgbToHsv(red_input.value, green_input.value, blue_input.value);
             // setting new hue value
@@ -492,7 +494,7 @@ function ColorPickerControl(cfg) {
         // adding change event handler to change event listener of red input control
         red_input.on('change', red_input_change_handler);
         // creating change event handler for green input control
-        green_input_change_handler = function(value){
+        green_input_change_handler = function (value) {
             // getting convert rgb color data to hsv
             let hsv = utils.rgbToHsv(red_input.value, green_input.value, blue_input.value);
             // setting new hue value
@@ -507,7 +509,7 @@ function ColorPickerControl(cfg) {
         // adding change event handler to change event listener of green input control
         green_input.on('change', green_input_change_handler);
         // creating change event handler for blue input control
-        blue_input_change_handler = function(value){
+        blue_input_change_handler = function (value) {
             // getting convert rgb color data to hsv
             let hsv = utils.rgbToHsv(red_input.value, green_input.value, blue_input.value);
             // setting new hue value
@@ -523,8 +525,8 @@ function ColorPickerControl(cfg) {
         blue_input.on('change', blue_input_change_handler);
 
         // creating change event handler for hex input control
-        hex_input_change_handler = function(value){
-            let hex = hex_input.value.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g,'');
+        hex_input_change_handler = function (value) {
+            let hex = hex_input.value.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g, '');
             //..
             let hsv = utils.hexToHsv(hex.padEnd(6, "0"));
             //..
@@ -537,9 +539,9 @@ function ColorPickerControl(cfg) {
         // adding change event handler to change event listener of hex input control
         hex_input.on('change', hex_input_change_handler);
 
-        if(config.use_alpha){
+        if (config.use_alpha) {
             // creating change event handler for alpha input control
-            alpha_input_change_handler = function(value){
+            alpha_input_change_handler = function (value) {
                 // setting new hue value
                 self.color.a = value;
                 // updating color picker control
@@ -582,7 +584,7 @@ function ColorPickerControl(cfg) {
         hex_input.off('change', hex_input_change_handler);
 
         // remove change event listener from alpha input control
-        if(config.use_alpha)
+        if (config.use_alpha)
             alpha_input.off('change', alpha_input_change_handler);
     }
 
@@ -611,12 +613,12 @@ function ColorPickerControl(cfg) {
         color_wheel.values.saturation = self.color.s;
         brightness_slider.value = self.color.v;
         //..
-        if(config.use_alpha)
+        if (config.use_alpha)
             alpha_input.value = self.color.a;
         //..
         bindEvents();
         //..
-        if(trigger_change_event)
+        if (trigger_change_event)
             emit('change', this.color);
     };
 
@@ -677,7 +679,7 @@ function ColorPickerControl(cfg) {
         brightness_input = null;
         hex_input.dispose();
         hex_input = null;
-        if(config.use_alpha)
+        if (config.use_alpha)
             alpha_input.dispose();
         alpha_input = null;
         // dispose functions
@@ -708,7 +710,7 @@ function ColorPickerControl(cfg) {
         this.a = a;
 
         Object.assign(HSVaColor.prototype, {
-            fromHSVa( h = 0, s = 0, v = 0, a = 255) {
+            fromHSVa(h = 0, s = 0, v = 0, a = 255) {
                 this.h = h;
                 this.s = s;
                 this.v = v;
@@ -726,13 +728,12 @@ function ColorPickerControl(cfg) {
             fromHSLa(h, s, l, a = 255) {
                 let hsv = utils.hslToHsv(h, s, l);
 
-                if(hsv != null){
+                if (hsv != null) {
                     this.h = hsv[0] || 0;
                     this.s = hsv[1] || 0;
                     this.v = hsv[2] || 0;
                     this.a = a;
-                }
-                else{
+                } else {
                     console.error('Error while parsing hsl into hsv');
                 }
                 return this;
@@ -749,13 +750,12 @@ function ColorPickerControl(cfg) {
                 //..
                 let hsv = utils.rgbToHsv(r, g, b);
 
-                if(hsv != null){
+                if (hsv != null) {
                     this.h = hsv[0] || 0;
                     this.s = hsv[1] || 0;
                     this.v = hsv[2] || 0;
                     this.a = a;
-                }
-                else{
+                } else {
                     console.error('Error while parsing rgb into hsv');
                 }
                 return this;
@@ -769,16 +769,15 @@ function ColorPickerControl(cfg) {
                 return rgba;
             },
             fromHEX(hex, a = 255) {
-                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g,'');
+                hex = hex.trim().toLowerCase().replace(/ /g, '').replace(/[^A-Za-z0-9\s]/g, '');
                 //..
                 let hsv = utils.hexToHsv(hex.padEnd(6, "0"));
-                if(hsv != null){
+                if (hsv != null) {
                     this.h = hsv[0] || 0;
                     this.s = hsv[1] || 0;
                     this.v = hsv[2] || 0;
                     this.a = a;
-                }
-                else{
+                } else {
                     console.error('Error while parsing hex into hsv');
                 }
                 return this;
@@ -825,16 +824,16 @@ function ColorPickerControl(cfg) {
         let _hue = color_picker_control.color.h;
         Object.defineProperty(this.values, 'hue', {
             // getter function
-            get: function() {
+            get: function () {
                 return _hue;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // if the set value is greater than the maximum value, then set the maximum value
-                if(v > 360)
+                if (v > 360)
                     v = 360;
                 // if the set value is less than the maximum value, then set the minimum value
-                if(v < 0)
+                if (v < 0)
                     v = 0;
                 //..
                 _hue = v;
@@ -851,16 +850,16 @@ function ColorPickerControl(cfg) {
         let _saturation = color_picker_control.color.s;
         Object.defineProperty(this.values, 'saturation', {
             // getter function
-            get: function() {
+            get: function () {
                 return _saturation;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // if the set value is greater than the maximum value, then set the maximum value
-                if(v > 100)
+                if (v > 100)
                     v = 100;
                 // if the set value is less than the maximum value, then set the minimum value
-                if(v < 0)
+                if (v < 0)
                     v = 0;
                 //..
                 _saturation = v;
@@ -880,7 +879,7 @@ function ColorPickerControl(cfg) {
          * @param {Any} args
          *  Event data
          */
-        let emit = function(event, ...args) {
+        let emit = function (event, ...args) {
             eventListeners[event].forEach(cb => cb(...args, self));
         }
 
@@ -891,7 +890,7 @@ function ColorPickerControl(cfg) {
          * @param {Function} fn
          *  Event function
          */
-        this.on = function(event, fn) {
+        this.on = function (event, fn) {
             eventListeners[event].push(fn);
             return this;
         }
@@ -903,7 +902,7 @@ function ColorPickerControl(cfg) {
          * @param {Function} fn
          *  Event function
          */
-        this.off = function(event, fn) {
+        this.off = function (event, fn) {
             const functions = (eventListeners[event] || []);
             const index = functions.indexOf(fn);
             if (~index)
@@ -918,7 +917,7 @@ function ColorPickerControl(cfg) {
          **/
         let init = function () {
             // color wheel initialization
-            initColorWheel(()=>{
+            initColorWheel(() => {
                 // draw control's canvas
                 drawCanvas();
                 // update thumb element
@@ -926,7 +925,7 @@ function ColorPickerControl(cfg) {
                 // bind events to ui
                 bindEvents();
                 // draw control's helpers
-                if(color_picker_control.debug)
+                if (color_picker_control.debug)
                     drawHelpers();
             });
         };
@@ -952,7 +951,7 @@ function ColorPickerControl(cfg) {
             let cx = radius;
             let cy = radius;
             // loop around circle
-            for(let i = 0; i < 360; i += step) {
+            for (let i = 0; i < 360; i += step) {
                 // get angle in radians
                 let rad = i * (2 * Math.PI) / 360;
                 // get line direction from center
@@ -968,9 +967,9 @@ function ColorPickerControl(cfg) {
             }
 
             // draw saturation gradient
-            let grd = ctx.createRadialGradient(cx,cy,0,cx,cx,radius);
-            grd.addColorStop(0,'rgba(255, 255, 255, 1)');
-            grd.addColorStop(1,'rgba(255, 255, 255, 0)');
+            let grd = ctx.createRadialGradient(cx, cy, 0, cx, cx, radius);
+            grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = grd;
             ctx.beginPath();
             ctx.arc(cx, cy, radius, 0, Math.PI * 2, true);
@@ -983,7 +982,7 @@ function ColorPickerControl(cfg) {
             ctx.stroke();
             // create image and load canvas result into it
             color_wheel = new Image();
-            color_wheel.onload = function() {
+            color_wheel.onload = function () {
                 callback();
             }
             color_wheel.src = can.toDataURL();
@@ -1000,18 +999,16 @@ function ColorPickerControl(cfg) {
             // get canvas context
             let ctx = canvas.getContext("2d");
             // rotate canvas context to 90 degrees
-            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate(90 * Math.PI / 180);
-            ctx.translate(-canvas.width/2, -canvas.height/2);
-
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
 
             //ctx.imageSmoothingEnabled = true;
 
 
-
             ctx.beginPath();
-            ctx.arc(canvas.width/2, canvas.width/2, canvas.width/2, 0, Math.PI*2);
+            ctx.arc(canvas.width / 2, canvas.width / 2, canvas.width / 2, 0, Math.PI * 2);
             ctx.clip();
             ctx.closePath();
             // drawing multiple times on this clipped area will increase artifacts
@@ -1066,7 +1063,7 @@ function ColorPickerControl(cfg) {
             ctx.beginPath();
             //ctx.strokeStyle = "rgb(38, 41, 50)";
             ctx.strokeStyle = "rgb(217, 214, 205)";
-            ctx.arc(canvas.width/2, canvas.width/2, canvas.width/2, 0, Math.PI*2);
+            ctx.arc(canvas.width / 2, canvas.width / 2, canvas.width / 2, 0, Math.PI * 2);
             ctx.stroke();
             ctx.closePath();
 
@@ -1093,9 +1090,9 @@ function ColorPickerControl(cfg) {
             thumb.style.backgroundColor = "rgb(" + main_color[0] + "," + main_color[1] + "," + main_color[2] + ")";
 
             // update thumb position based on hue and saturation values (if it changed ouside)
-            if(!is_mouse_down){
-                thumb.style.left = (canvas_bb.width / 2) + ((canvas_bb.width / 2)/100*color_picker_control.color.s) * Math.cos(utils.degreesToRadians(color_picker_control.color.h + 90)) - (thumb_bb.width / 2) + 'px';
-                thumb.style.top = (canvas_bb.height / 2) + ((canvas_bb.width / 2)/100*color_picker_control.color.s)  * Math.sin(utils.degreesToRadians(color_picker_control.color.h + 90)) - (thumb_bb.height / 2) + 'px';
+            if (!is_mouse_down) {
+                thumb.style.left = (canvas_bb.width / 2) + ((canvas_bb.width / 2) / 100 * color_picker_control.color.s) * Math.cos(utils.degreesToRadians(color_picker_control.color.h + 90)) - (thumb_bb.width / 2) + 'px';
+                thumb.style.top = (canvas_bb.height / 2) + ((canvas_bb.width / 2) / 100 * color_picker_control.color.s) * Math.sin(utils.degreesToRadians(color_picker_control.color.h + 90)) - (thumb_bb.height / 2) + 'px';
             }
 
             // update thumb dataset hue and saturation values
@@ -1108,7 +1105,7 @@ function ColorPickerControl(cfg) {
          **/
         let bindEvents = function () {
             // initialize thumb element mousedown/touchstart handler
-            thumb_mousedown_handler = function(e){
+            thumb_mousedown_handler = function (e) {
                 // remove document selection before thumb moving
                 if (document.selection) {
                     document.selection.empty()
@@ -1124,7 +1121,7 @@ function ColorPickerControl(cfg) {
             thumb.addEventListener('touchstart', thumb_mousedown_handler, true);
 
             // initialize canvas element mousedown/touchstart handler
-            canvas_mousedown_handler = function(e){
+            canvas_mousedown_handler = function (e) {
                 // remove document selection before thumb moving
                 if (document.selection) {
                     document.selection.empty()
@@ -1152,15 +1149,14 @@ function ColorPickerControl(cfg) {
 
                 // calculate angle of vector from control center to thumb element
                 let angle = Math.atan2(y1 - y2, x1 - x2) * 360 / (2 * Math.PI) - 90;
-                if(angle < 0) angle += 360;
+                if (angle < 0) angle += 360;
 
                 // check if thumb element position outside the color wheel
-                if(Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) > r){
+                if (Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) > r) {
                     // set thumb element position on circle border by angle and radius
                     thumb.style.left = (canvas_bb.width / 2) + r * Math.cos(utils.degreesToRadians(angle + 90)) - (thumb_bb.width / 2) + 'px';
                     thumb.style.top = (canvas_bb.height / 2) + r * Math.sin(utils.degreesToRadians(angle + 90)) - (thumb_bb.height / 2) + 'px';
-                }
-                else{ // set thumb position by mouse position
+                } else { // set thumb position by mouse position
                     thumb.style.left = ((pageX - canvas_bb.left) - thumb_bb.width / 2) + 'px';
                     thumb.style.top = ((pageY - canvas_bb.top) - thumb_bb.height / 2) + 'px';
                 }
@@ -1194,7 +1190,7 @@ function ColorPickerControl(cfg) {
             canvas.addEventListener('touchstart', canvas_mousedown_handler, true);
 
             // initialize document mousemove/touchmove handler
-            document_mousemove_handler = function(e){
+            document_mousemove_handler = function (e) {
                 // check if is_mouse_down flag has true value
                 if (is_mouse_down) {
                     // prevent scroll
@@ -1218,15 +1214,14 @@ function ColorPickerControl(cfg) {
 
                     // calculate angle of vector from control center to thumb element
                     let angle = Math.atan2(y1 - y2, x1 - x2) * 360 / (2 * Math.PI) - 90;
-                    if(angle < 0) angle += 360;
+                    if (angle < 0) angle += 360;
 
                     // check if thumb element position outside the color wheel
-                    if(Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) > r){
+                    if (Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) > r) {
                         // set thumb element position on circle border by angle and radius
                         thumb.style.left = (canvas_bb.width / 2) + r * Math.cos(utils.degreesToRadians(angle + 90)) - (thumb_bb.width / 2) + 'px';
                         thumb.style.top = (canvas_bb.height / 2) + r * Math.sin(utils.degreesToRadians(angle + 90)) - (thumb_bb.height / 2) + 'px';
-                    }
-                    else{ // set thumb position by mouse position
+                    } else { // set thumb position by mouse position
                         thumb.style.left = ((pageX - canvas_bb.left) - thumb_bb.width / 2) + 'px';
                         thumb.style.top = ((pageY - canvas_bb.top) - thumb_bb.height / 2) + 'px';
                     }
@@ -1258,10 +1253,10 @@ function ColorPickerControl(cfg) {
             };
             // add mousemove/touchmove event listeners to document
             document.addEventListener('mousemove', document_mousemove_handler, true);
-            document.addEventListener('touchmove', document_mousemove_handler, { passive: false });
+            document.addEventListener('touchmove', document_mousemove_handler, {passive: false});
 
             // initialize document mouseup/touchend handler
-            document_mouseup_handler = function(e){
+            document_mouseup_handler = function (e) {
                 // set is_mouse_down flag to false
                 is_mouse_down = false;
             };
@@ -1290,7 +1285,7 @@ function ColorPickerControl(cfg) {
         /**
          * The function of drawing control's helpers
          **/
-        let drawHelpers = function() {
+        let drawHelpers = function () {
             // get the sizes of the canvas and thumb elements and the position of these elements relative to the document
             let canvas_bb = utils.getBoundingBox(canvas);
             let thumb_bb = utils.getBoundingBox(thumb);
@@ -1310,7 +1305,7 @@ function ColorPickerControl(cfg) {
 
             // calculate angle of vector from control center to thumb element
             let scale_angle = Math.atan2(y1 - y2, x1 - x2) * 360 / (2 * Math.PI) - 90;
-            if(scale_angle < 0) scale_angle += 360;
+            if (scale_angle < 0) scale_angle += 360;
 
             // calculate saturation scale length and roatation angle in radians
             let dx = ((canvas_bb.left + canvas_bb.width / 2) - (thumb_bb.left + thumb_bb.width / 2)),
@@ -1318,8 +1313,7 @@ function ColorPickerControl(cfg) {
                 scale_length = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
             // if saturation scale length more than 0
-            if(scale_length > 0)
-            {
+            if (scale_length > 0) {
                 //#region draw saturation scale helper
                 // draw a vector to the center of the wheel
                 ctx.beginPath();
@@ -1349,25 +1343,25 @@ function ColorPickerControl(cfg) {
                 // set number of stripes
                 let numberOfStripes = 20;
                 // draw stripes
-                for (var i=0; i < numberOfStripes;i++){
+                for (var i = 0; i < numberOfStripes; i++) {
                     var thickness = 2;
                     stripesPatternPattern.beginPath();
-                    stripesPatternPattern.strokeStyle = i % 2?color1:color2;
-                    stripesPatternPattern.lineWidth =thickness;
-                    stripesPatternPattern.moveTo(0,i*thickness + thickness/2);
-                    stripesPatternPattern.lineTo(100,i*thickness + thickness/2);
+                    stripesPatternPattern.strokeStyle = i % 2 ? color1 : color2;
+                    stripesPatternPattern.lineWidth = thickness;
+                    stripesPatternPattern.moveTo(0, i * thickness + thickness / 2);
+                    stripesPatternPattern.lineTo(100, i * thickness + thickness / 2);
                     stripesPatternPattern.stroke();
                 }
                 stripesPatternPattern.closePath();
 
                 // add stripes pattern on the canvas
-                var stripes_pattern = ctx.createPattern(stripesPattern,"repeat");
+                var stripes_pattern = ctx.createPattern(stripesPattern, "repeat");
 
                 // draw circle in the center of canvas
                 ctx.beginPath();
                 ctx.setLineDash([3, 3]);
-                ctx.moveTo(canvas_bb.width/2, canvas_bb.height/2);
-                ctx.arc(canvas_bb.width/2, canvas_bb.height/2, Math.min(r/2, scale_length), 0, utils.degreesToRadians(scale_angle), false);
+                ctx.moveTo(canvas_bb.width / 2, canvas_bb.height / 2);
+                ctx.arc(canvas_bb.width / 2, canvas_bb.height / 2, Math.min(r / 2, scale_length), 0, utils.degreesToRadians(scale_angle), false);
                 ctx.closePath();
                 ctx.strokeStyle = 'rgba(0,0,0,0.2)';
                 ctx.fillStyle = stripes_pattern;
@@ -1377,9 +1371,9 @@ function ColorPickerControl(cfg) {
 
                 //#region draw hue and saturation values
                 // rotate canvas context to 90 degrees
-                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.translate(canvas.width / 2, canvas.height / 2);
                 ctx.rotate(-90 * Math.PI / 180);
-                ctx.translate(-canvas.width/2, -canvas.height/2);
+                ctx.translate(-canvas.width / 2, -canvas.height / 2);
                 // draw hue text value
                 ctx.beginPath();
                 ctx.font = "8px serif";
@@ -1405,7 +1399,7 @@ function ColorPickerControl(cfg) {
             // update thumb element
             updateThumb();
             // draw control's helpers
-            if(color_picker_control.debug)
+            if (color_picker_control.debug)
                 drawHelpers();
         };
 
@@ -1469,16 +1463,16 @@ function ColorPickerControl(cfg) {
         let _value = color_picker_control.color.v;
         Object.defineProperty(self, 'value', {
             // getter function
-            get: function() {
+            get: function () {
                 return _value;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // if the set value is greater than the maximum value, then set the maximum value
-                if(v > 100)
+                if (v > 100)
                     v = 100;
                 // if the set value is less than the maximum value, then set the minimum value
-                if(v < 0)
+                if (v < 0)
                     v = 0;
                 //..
                 _value = v;
@@ -1498,7 +1492,7 @@ function ColorPickerControl(cfg) {
          * @param {Any} args
          *  Event data
          */
-        let emit = function(event, ...args) {
+        let emit = function (event, ...args) {
             eventListeners[event].forEach(cb => cb(...args, self));
         }
 
@@ -1509,7 +1503,7 @@ function ColorPickerControl(cfg) {
          * @param {Function} fn
          *  Event function
          */
-        this.on = function(event, fn) {
+        this.on = function (event, fn) {
             eventListeners[event].push(fn);
             return this;
         }
@@ -1521,7 +1515,7 @@ function ColorPickerControl(cfg) {
          * @param {Function} fn
          *  Event function
          */
-        this.off = function(event, fn) {
+        this.off = function (event, fn) {
             const functions = (eventListeners[event] || []);
             const index = functions.indexOf(fn);
             if (~index)
@@ -1542,7 +1536,7 @@ function ColorPickerControl(cfg) {
             // bind events to ui
             bindEvents();
             // draw control's helpers
-            if(color_picker_control.debug)
+            if (color_picker_control.debug)
                 drawHelpers();
         };
 
@@ -1586,8 +1580,8 @@ function ColorPickerControl(cfg) {
             // set thumb horisontal position in the center of the brightness scale
             thumb.style.left = canvas_bb.width / 2 - thumb_bb.width / 2 + 'px';
             // update thumb position based on hue value (if it changed ouside)
-            if(!is_mouse_down) {
-                thumb.style.top = - thumb_bb.height/2 + (canvas_bb.height * ((100 - self.value)/100)) + 'px';
+            if (!is_mouse_down) {
+                thumb.style.top = -thumb_bb.height / 2 + (canvas_bb.height * ((100 - self.value) / 100)) + 'px';
             }
 
             // update thumb dataset value
@@ -1599,7 +1593,7 @@ function ColorPickerControl(cfg) {
          **/
         let bindEvents = function () {
             // initialize thumb element mousedown/touchstart handler
-            thumb_mousedown_handler = function(e){
+            thumb_mousedown_handler = function (e) {
                 // remove document selection before thumb moving
                 if (document.selection) {
                     document.selection.empty()
@@ -1614,7 +1608,7 @@ function ColorPickerControl(cfg) {
             thumb.addEventListener('touchstart', thumb_mousedown_handler, true);
 
             // initialize canvas element mousedown/touchstart handler
-            canvas_mousedown_handler = function(e){
+            canvas_mousedown_handler = function (e) {
                 // remove document selection before thumb moving
                 if (document.selection) {
                     document.selection.empty()
@@ -1636,12 +1630,11 @@ function ColorPickerControl(cfg) {
                 thumb.style.left = canvas_bb.width / 2 - thumb_bb.width / 2 + 'px';
 
                 //..
-                if(canvas_bb.top <= (pageY + thumb_bb.height / 2) && (pageY + thumb_bb.height / 2) <= (canvas_bb.top + canvas_bb.height)){
+                if (canvas_bb.top <= (pageY + thumb_bb.height / 2) && (pageY + thumb_bb.height / 2) <= (canvas_bb.top + canvas_bb.height)) {
                     thumb.style.top = (pageY - canvas_bb.top) + 'px';
-                }
-                else{ //..
+                } else { //..
                     //..
-                    if(canvas_bb.top > (pageY + thumb_bb.height / 2))
+                    if (canvas_bb.top > (pageY + thumb_bb.height / 2))
                         thumb.style.top = (-thumb_bb.height / 2) + 'px';
                     else //..
                         thumb.style.top = (canvas_bb.height - thumb_bb.height / 2) + 'px';
@@ -1666,7 +1659,7 @@ function ColorPickerControl(cfg) {
             canvas.addEventListener('touchstart', canvas_mousedown_handler, true);
 
             // initialize document mousemove/touchmove handler
-            document_mousemove_handler = function(e){
+            document_mousemove_handler = function (e) {
                 // check if is_mouse_down flag has true value
                 if (is_mouse_down) {
                     // prevent scroll
@@ -1684,12 +1677,11 @@ function ColorPickerControl(cfg) {
                     thumb.style.left = canvas_bb.width / 2 - thumb_bb.width / 2 + 'px';
 
                     //..
-                    if(canvas_bb.top <= (pageY + thumb_bb.height / 2) && (pageY + thumb_bb.height / 2) <= (canvas_bb.top + canvas_bb.height)){
+                    if (canvas_bb.top <= (pageY + thumb_bb.height / 2) && (pageY + thumb_bb.height / 2) <= (canvas_bb.top + canvas_bb.height)) {
                         thumb.style.top = (pageY - canvas_bb.top) + 'px';
-                    }
-                    else{ //..
+                    } else { //..
                         //..
-                        if(canvas_bb.top > (pageY + thumb_bb.height / 2))
+                        if (canvas_bb.top > (pageY + thumb_bb.height / 2))
                             thumb.style.top = (-thumb_bb.height / 2) + 'px';
                         else //..
                             thumb.style.top = (canvas_bb.height - thumb_bb.height / 2) + 'px';
@@ -1712,10 +1704,10 @@ function ColorPickerControl(cfg) {
                 }
             };
             document.addEventListener('mousemove', document_mousemove_handler, true);
-            document.addEventListener('touchmove', document_mousemove_handler, { passive: false });
+            document.addEventListener('touchmove', document_mousemove_handler, {passive: false});
 
             // initialize document mouseup/touchend handler
-            document_mouseup_handler = function(e){
+            document_mouseup_handler = function (e) {
                 // set is_mouse_down flag to false
                 is_mouse_down = false;
             };
@@ -1743,7 +1735,7 @@ function ColorPickerControl(cfg) {
         /**
          * The function of drawing control's helpers
          **/
-        let drawHelpers = function() {
+        let drawHelpers = function () {
             // get the sizes of the canvas and thumb elements and the position of these elements relative to the document
             let canvas_bb = utils.getBoundingBox(canvas);
             let thumb_bb = utils.getBoundingBox(thumb);
@@ -1755,8 +1747,7 @@ function ColorPickerControl(cfg) {
             var ctx = canvas.getContext("2d");
 
             // if brightness scale length more than 0
-            if(scale_length > 0)
-            {
+            if (scale_length > 0) {
                 //#region draw brightness scale helper
                 // draw a vector to thumb element position
                 ctx.beginPath();
@@ -1782,7 +1773,7 @@ function ColorPickerControl(cfg) {
             // update thumb element
             updateThumb();
             // draw control's helpers
-            if(color_picker_control.debug)
+            if (color_picker_control.debug)
                 drawHelpers();
         };
 
@@ -1853,16 +1844,16 @@ function ColorPickerControl(cfg) {
         let _value = Number(root.dataset.value) || 0;
         Object.defineProperty(self, 'value', {
             // getter function
-            get: function() {
+            get: function () {
                 return _value;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // if the set value is greater than the maximum value, then set the maximum value
-                if(self.max != null && v > self.max)
+                if (self.max != null && v > self.max)
                     v = self.max;
                 // if the set value is less  than the maximum value, then set the minimum value
-                if(self.min != null && v < self.min)
+                if (self.min != null && v < self.min)
                     v = self.min;
                 // round a value to the specified precision in a step
                 _value = utils.round(Number(v), utils.countDecimals(self.step));
@@ -1871,8 +1862,8 @@ function ColorPickerControl(cfg) {
                 // set value to label
                 range_value.innerHTML = _value;
                 //..
-                if(self.max != null)
-                    range_progress.style.width = _value/self.max * 100 + '%';
+                if (self.max != null)
+                    range_progress.style.width = _value / self.max * 100 + '%';
                 // trigger value changed event
                 emit('change', self.value);
             },
@@ -1884,19 +1875,18 @@ function ColorPickerControl(cfg) {
         let _is_focused = false;
         Object.defineProperty(self, 'isFocused', {
             // getter function
-            get: function() {
+            get: function () {
                 return _is_focused;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // set focused state
                 _is_focused = v;
                 // trigger focus event
-                if(_is_focused){
+                if (_is_focused) {
                     self.root.classList.add('range-input-control--focused');
                     emit('focus', self);
-                }
-                else{
+                } else {
                     emit('blur', self);
                     self.root.classList.remove('range-input-control--focused');
                 }
@@ -1908,14 +1898,14 @@ function ColorPickerControl(cfg) {
         /**
          * function for trigger handler event
          **/
-        let emit = function(event, ...args) {
+        let emit = function (event, ...args) {
             eventListeners[event].forEach(cb => cb(...args, self));
         }
 
         /**
          * function for attaching handler to event
          **/
-        this.on = function(event, cb) {
+        this.on = function (event, cb) {
             eventListeners[event].push(cb);
             return this;
         }
@@ -1923,7 +1913,7 @@ function ColorPickerControl(cfg) {
         /**
          * function for removing handler from event
          **/
-        this.off = function(event, cb) {
+        this.off = function (event, cb) {
             const callBacks = (eventListeners[event] || []);
             const index = callBacks.indexOf(cb);
             if (~index)
@@ -1941,8 +1931,8 @@ function ColorPickerControl(cfg) {
             // set control text value
             range_value.innerHTML = Number(self.value).toFixed(utils.countDecimals(self.step));
             //..
-            if(self.max != null)
-                range_progress.style.width = self.value/self.max * 100% + '%';
+            if (self.max != null)
+                range_progress.style.width = self.value / self.max * 100 % +'%';
             // add class to folding screen
             folding_screen.classList.add('cursor-folding-screen');
             // bind events to the controls
@@ -1955,10 +1945,10 @@ function ColorPickerControl(cfg) {
         let bindEvents = function () {
             //#region add event listeners to value block
             // create handler for value block mousedown event
-            root_mousedown_handler = function(e){
+            root_mousedown_handler = function (e) {
                 e.stopPropagation();
 
-                if( self.root.classList.contains('range-input-control--disabled')
+                if (self.root.classList.contains('range-input-control--disabled')
                     || self.root.classList.contains('range-input-control--mouse-move-mode')
                     || self.root.classList.contains('range-input-control--key-input-mode'))
                     return;
@@ -1976,20 +1966,20 @@ function ColorPickerControl(cfg) {
                 document.body.appendChild(folding_screen);
                 folding_screen.focus();
 
-                if(!self.root.classList.contains('range-input-control--mouse-move-mode'))
+                if (!self.root.classList.contains('range-input-control--mouse-move-mode'))
                     self.root.classList.add('range-input-control--mouse-move-mode');
 
                 //..
                 let root_rect = self.root.getBoundingClientRect();
 
                 //..
-                let move = function(e){
-                    if(!change_on_mouse_move) return;
+                let move = function (e) {
+                    if (!change_on_mouse_move) return;
                     change_on_key_input = false;
 
                     //..
-                    if(e.stopPropagation) e.stopPropagation();
-                    if(e.preventDefault) e.preventDefault();
+                    if (e.stopPropagation) e.stopPropagation();
+                    if (e.preventDefault) e.preventDefault();
 
                     // get horizontal and vertical mouse points, relative to the document
                     let pageX = e.touches ? e.touches[0].pageX : e.pageX;
@@ -1999,10 +1989,10 @@ function ColorPickerControl(cfg) {
                     let step = ((pageX - last_mouse_position) / root_rect.width) * (self.max - self.min);
 
                     //..
-                    if(pageX == 0)
+                    if (pageX == 0)
                         self.value = self.value - self.step;
                     //..
-                    else if(pageX == window.screen.width-1)
+                    else if (pageX == window.screen.width - 1)
                         self.value = self.value + self.step;
                     //..
                     else
@@ -2012,24 +2002,23 @@ function ColorPickerControl(cfg) {
                     last_mouse_position = pageX;
                 };
                 //..
-                let up = function(e){
-                    if(change_on_mouse_move){
+                let up = function (e) {
+                    if (change_on_mouse_move) {
                         change_on_mouse_move = false;
-                        if(self.root.classList.contains('range-input-control--mouse-move-mode'))
+                        if (self.root.classList.contains('range-input-control--mouse-move-mode'))
                             self.root.classList.remove('range-input-control--mouse-move-mode');
-                        if(folding_screen != null && folding_screen.parentNode != null)
+                        if (folding_screen != null && folding_screen.parentNode != null)
                             document.body.removeChild(folding_screen);
                     }
 
-                    if(change_on_key_input){
+                    if (change_on_key_input) {
                         //..
-                        if(!self.root.classList.contains('range-input-control--key-input-mode'))
+                        if (!self.root.classList.contains('range-input-control--key-input-mode'))
                             self.root.classList.add('range-input-control--key-input-mode');
                         //..
                         range_input.focus();
                         range_input.select();
-                    }
-                    else{
+                    } else {
                         self.isFocused = false;
                     }
 
@@ -2037,11 +2026,11 @@ function ColorPickerControl(cfg) {
                     document.removeEventListener('touchmove', move, false);
                 };
                 //..
-                document.addEventListener('mouseup', up, { once: true });
-                document.addEventListener('touchend', up, { once: true });
+                document.addEventListener('mouseup', up, {once: true});
+                document.addEventListener('touchend', up, {once: true});
                 //..
-                document.addEventListener('mousemove', move, { passive: false });
-                document.addEventListener('touchmove', move, { passive: false });
+                document.addEventListener('mousemove', move, {passive: false});
+                document.addEventListener('touchmove', move, {passive: false});
             };
             // attach handler to value block mousedown event
             self.root.addEventListener('mousedown', root_mousedown_handler, true);
@@ -2050,9 +2039,9 @@ function ColorPickerControl(cfg) {
 
             //#region add event listeners to value input
             // create handler for value input focusout event
-            input_focusout_handler = function(e){
+            input_focusout_handler = function (e) {
                 //..
-                if(self.root.classList.contains('range-input-control--key-input-mode'))
+                if (self.root.classList.contains('range-input-control--key-input-mode'))
                     self.root.classList.remove('range-input-control--key-input-mode');
                 this.value = self.value;
                 self.isFocused = false;
@@ -2061,13 +2050,13 @@ function ColorPickerControl(cfg) {
             range_input.addEventListener("focusout", input_focusout_handler);
 
             // create handler for value input keyup event
-            input_keyup_handler = function(e){
+            input_keyup_handler = function (e) {
                 // 27...Escape
                 if (e.keyCode === 27) {
                     // Cancel the default action, if needed
                     e.preventDefault();
                     //..
-                    if(self.root.classList.contains('range-input-control--key-input-mode'))
+                    if (self.root.classList.contains('range-input-control--key-input-mode'))
                         self.root.classList.remove('range-input-control--key-input-mode');
                     this.value = self.value;
                     self.isFocused = false;
@@ -2078,7 +2067,7 @@ function ColorPickerControl(cfg) {
                     // Cancel the default action, if needed
                     e.preventDefault();
                     //..
-                    if(self.root.classList.contains('range-input-control--key-input-mode'))
+                    if (self.root.classList.contains('range-input-control--key-input-mode'))
                         self.root.classList.remove('range-input-control--key-input-mode');
                     //..
                     self.value = this.value;
@@ -2178,11 +2167,11 @@ function ColorPickerControl(cfg) {
         let _value = root.dataset.value || '';
         Object.defineProperty(self, 'value', {
             // getter function
-            get: function() {
+            get: function () {
                 return _value;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 //..
                 _value = v;
                 // set value to input
@@ -2200,19 +2189,18 @@ function ColorPickerControl(cfg) {
         let _is_focused = false;
         Object.defineProperty(self, 'isFocused', {
             // getter function
-            get: function() {
+            get: function () {
                 return _is_focused;
             },
             //setter function
-            set: function(v){
+            set: function (v) {
                 // set focused state
                 _is_focused = v;
                 // trigger focus event
-                if(_is_focused){
+                if (_is_focused) {
                     self.root.classList.add('text-input-control--focused');
                     emit('focus', self);
-                }
-                else{
+                } else {
                     emit('blur', self);
                     self.root.classList.remove('text-input-control--focused');
                 }
@@ -2224,14 +2212,14 @@ function ColorPickerControl(cfg) {
         /**
          * function for trigger handler event
          **/
-        let emit = function(event, ...args) {
+        let emit = function (event, ...args) {
             eventListeners[event].forEach(cb => cb(...args, self));
         }
 
         /**
          * function for attaching handler to event
          **/
-        this.on = function(event, cb) {
+        this.on = function (event, cb) {
             eventListeners[event].push(cb);
             return this;
         }
@@ -2239,7 +2227,7 @@ function ColorPickerControl(cfg) {
         /**
          * function for removing handler from event
          **/
-        this.off = function(event, cb) {
+        this.off = function (event, cb) {
             const callBacks = (eventListeners[event] || []);
             const index = callBacks.indexOf(cb);
             if (~index)
@@ -2266,23 +2254,23 @@ function ColorPickerControl(cfg) {
         let bindEvents = function () {
             //#region add event listeners to value block
             // create handler for value block mousedown event
-            root_mousedown_handler = function(e){
+            root_mousedown_handler = function (e) {
                 e.stopPropagation();
                 //..
-                if( self.root.classList.contains('text-input-control--disabled'))
+                if (self.root.classList.contains('text-input-control--disabled'))
                     return;
                 //..
                 self.isFocused = true;
 
                 //..
-                let up = function(e){
+                let up = function (e) {
                     //..
                     text_input.focus();
                     text_input.select();
                 };
                 //..
-                document.addEventListener('mouseup', up, { once: true });
-                document.addEventListener('touchend', up, { once: true });
+                document.addEventListener('mouseup', up, {once: true});
+                document.addEventListener('touchend', up, {once: true});
             };
             // attach handler to value block mousedown event
             self.root.addEventListener('mousedown', root_mousedown_handler, true);
@@ -2291,7 +2279,7 @@ function ColorPickerControl(cfg) {
 
             //#region add event listeners to value input
             // create handler for value input focusout event
-            input_focusout_handler = function(e){
+            input_focusout_handler = function (e) {
                 this.value = self.value;
                 self.isFocused = false;
             };
@@ -2299,10 +2287,10 @@ function ColorPickerControl(cfg) {
             text_input.addEventListener("focusout", input_focusout_handler, true);
 
             // create handler for value input keydown event
-            input_keydown_handler = function(e){
+            input_keydown_handler = function (e) {
                 var key = e.keyCode || e.charCode;
-                if(self.isAlphanumeric){
-                    if (!e.key.match(/[a-zA-Z0-9]/) || (document.getSelection().toString().length == 0 && (key !== 37 && key !== 39) && this.value.length == 6 && key!=8 && key!=46)) {
+                if (self.isAlphanumeric) {
+                    if (!e.key.match(/[a-zA-Z0-9]/) || (document.getSelection().toString().length == 0 && (key !== 37 && key !== 39) && this.value.length == 6 && key != 8 && key != 46)) {
                         e.preventDefault();
                     }
                 }
@@ -2311,7 +2299,7 @@ function ColorPickerControl(cfg) {
             text_input.addEventListener("keydown", input_keydown_handler, true);
 
             // create handler for value input keyup event
-            input_keyup_handler = function(e){
+            input_keyup_handler = function (e) {
                 // 27...Escape
                 if (e.keyCode === 27) {
                     // Cancel the default action, if needed
@@ -2401,11 +2389,6 @@ function ColorPickerControl(cfg) {
 }
 
 
-
-
-
-
-
 const source = new EventSource("/events");
 source.addEventListener('log', function (e) {
     const log = document.getElementById("log");
@@ -2457,14 +2440,109 @@ for (; row = states.rows[i]; i++) {
     }
     if (row.classList.contains("light")) {
         (function (id) {
-            let picker = new ColorPickerControl({ container: row.children[2].children[0], use_alpha: false});
+            let div1 = document.createElement("div");
+            div1.classList.add("neco")
+            let div2 = document.createElement("div");
+            let div3 = document.createElement("div");
+            div2.classList.add("effects")
+            div2.innerHTML = ` 
+        <label for="effects">Svetelny efekt</label><br>
+            <select id="effects" name="Effects">
+            <option value="0">None</option>
+            <option value="1">Rainbow</option>
+            <option value="2">Random</option>
+            <option value="3">Pulse</option>
+            <option value="4">Scan</option>
+            <option value="5">Wipe</option>
+            <option value="6">Twinkle_random</option>
+            <option value="7">Fireworks</option>
+        </select>`
+
+            row.children[2].children[0].before(div1, div2, div3)
+            div2.children[2].onchange = function () {
+                let text = this.options[this.selectedIndex].text;
+                console.log("select", text);
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", '/light/' + id.substr(6) + '/turn_on?effect=' + text
+                    , true);
+                xhr.send();
+            }
+
+            div3.innerHTML = `
+ <label for="brightness">Uroven osvetleni</label><br>
+ <input type="range" min="1" max="255" value=255" class="slider" id="brightness">`
+            div3.children[2].oninput = function () {
+                let text = this.value;
+                console.log("select", text);
+                const xhr = new XMLHttpRequest();
+                if (text < 30) {
+                    xhr.open("POST", '/light/' + id.substr(6) + '/turn_off', true);
+                } else {
+                    xhr.open("POST", '/light/' + id.substr(6) + '/turn_on?brightness=' + text
+                        , true);
+                }
+                xhr.send();
+            }
+
+            let picker = new ColorPickerControl({container: row.children[2].children[0], use_alpha: false});
+
+            source.addEventListener('state', function (e) {
+                const data = JSON.parse(e.data);
+                if (data.id === id) {
+                    document.getElementById("brightness").value = data.brightness;
+                    let effectItem = document.getElementById("effects");
+                    for (let i = 0; effectItem !== null &&  i < effectItem.options.length; i++) {
+                        if (effectItem.options[i].label === data.effect) {
+                            effectItem.selectedIndex = i;
+                            break;
+                        }
+                    }
+
+                    let red = data.color["r"] / 255;
+                    let green = data.color["g"] / 255;
+                    let blue = data.color["b"] / 255;
+
+                    const minVal = Math.min(red, green, blue);
+                    const maxVal = Math.max(red, green, blue);
+                    const delta = maxVal - minVal;
+
+                    let hue, saturation;
+                    const value = maxVal;
+                    if (delta === 0) {
+                        hue = saturation = 0;
+                    } else {
+                        saturation = delta / maxVal;
+                        const dr = (((maxVal - red) / 6) + (delta / 2)) / delta;
+                        const dg = (((maxVal - green) / 6) + (delta / 2)) / delta;
+                        const db = (((maxVal - blue) / 6) + (delta / 2)) / delta;
+
+                        if (red === maxVal) {
+                            hue = db - dg;
+                        } else if (green === maxVal) {
+                            hue = (1 / 3) + dr - db;
+                        } else if (blue === maxVal) {
+                            hue = (2 / 3) + dg - dr;
+                        }
+
+                        if (hue < 0) {
+                            hue += 1;
+                        } else if (hue > 1) {
+                            hue -= 1;
+                        }
+                    }
+                    picker.color.h = (hue * 360);
+                    picker.color.s = (saturation * 100);
+                    picker.color.v = (value * 100);
+                    picker.update(false);
+                }
+            });
 
 
             picker.on('change', (color) => {
                 console.log('Event: "change"', color);
-                hue = (color.h / 360) * 6;
-                saturation = color.s/100;
-                value = color.v/100;
+                const hue = (color.h / 360) * 6;
+                const saturation = color.s / 100;
+                const value = color.v / 100;
 
                 const i = Math.floor(hue);
 
@@ -2474,18 +2552,18 @@ for (; row = states.rows[i]; i++) {
                 const t = value * (1 - (1 - f) * saturation);
 
                 const mod = i % 6;
-                const red = ([value, q, p, p, t, value][mod])*255;
-                const green = ([t, value, value, q, p, p][mod])*255;
-                const blue = ([p, p, t, value, value, q][mod])*255;
+                const red = ([value, q, p, p, t, value][mod]) * 255;
+                const green = ([t, value, value, q, p, p][mod]) * 255;
+                const blue = ([p, p, t, value, value, q][mod]) * 255;
                 console.log('Event: "change"', red, green, blue);
                 const xhr = new XMLHttpRequest();
 
-                xhr.open("POST", '/light/' + id.substr(6) + '/turn_on?r='+ red + '&g='+ green + '&b=' + blue
+                xhr.open("POST", '/light/' + id.substr(6) + '/turn_on?r=' + red + '&g=' + green + '&b=' + blue
                     , true);
                 xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
                 xhr.send();
             });
-            row.children[2].children[0].addEventListener('click', function () {
+            row.children[2].children[3].addEventListener('click', function () {
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", '/light/' + id.substr(6) + '/toggle', true);
                 xhr.send();
@@ -2516,5 +2594,3 @@ for (; row = states.rows[i]; i++) {
         })(row.id);
     }
 }
-
-
